@@ -1,16 +1,16 @@
-import React from 'react';
+import React from "react";
 
 const navItems = [
-  { label: 'Home' },
-  { label: 'Desktop Web' },
-  { label: 'Dashboard' },
-  { label: 'Test Cases' },
-  { label: 'Jobs' },
-  { label: 'Reports' },
-  { label: 'Assets' },
-  { label: 'Services' },
-  { label: 'Management' },
-  { label: 'FAQ' },
+  { label: "Home" },
+  { label: "Desktop Web" },
+  { label: "Dashboard" },
+  { label: "Test Cases" },
+  { label: "Jobs" },
+  { label: "Reports" },
+  { label: "Assets" },
+  { label: "Services" },
+  { label: "Management" },
+  { label: "FAQ" },
 ];
 
 const SideBar: React.FC = () => {

@@ -15,19 +15,27 @@ export const AccordionTable: React.FC<Props> = ({ id, userId, access }) => {
           <tr>
             <th className="border border-gray-300 px-4 py-2 text-left">DB</th>
             <th className="border border-gray-300 px-4 py-2 text-left">ID</th>
-            <th className="border border-gray-300 px-4 py-2 text-left">USER_ID</th>
-            <th className="border border-gray-300 px-4 py-2 text-left">ACCESS</th>
+            <th className="border border-gray-300 px-4 py-2 text-left">
+              USER_ID
+            </th>
+            <th className="border border-gray-300 px-4 py-2 text-left">
+              ACCESS
+            </th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td className="border border-gray-300 px-4 py-2 flex gap-1"><SourceIcon /> Source Record</td>
+            <td className="border border-gray-300 px-4 py-2 flex gap-1">
+              <SourceIcon /> Source Record
+            </td>
             <td className="border border-gray-300 px-4 py-2">{id}</td>
             <td className="border border-gray-300 px-4 py-2">{userId}</td>
             <td className="border border-gray-300 px-4 py-2">{access}</td>
           </tr>
           <tr>
-            <td className="border border-gray-300 px-4 py-2 flex gap-1"><TargetIcon /> Target Record</td>
+            <td className="border border-gray-300 px-4 py-2 flex gap-1">
+              <TargetIcon /> Target Record
+            </td>
             <td className="border border-gray-300 px-4 py-2">{id}</td>
             <td className="border border-gray-300 px-4 py-2">{userId}</td>
             <td className="border border-gray-300 px-4 py-2">{access}</td>

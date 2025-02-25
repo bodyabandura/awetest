@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import mock from "../../mock.json";
 import { Accordion } from "./Accordion";
-
-const TestCaseInfo: React.FC = () => {
-  const [openAccordions, setOpenAccordions] = useState<{ [key: string]: boolean }>({
+type Props = {
+  text: string;
+  bg: string;
+};
+const TestCaseInfo: React.FC<Props> = ({ text, bg }) => {
+  const [openAccordions, setOpenAccordions] = useState<{
+    [key: string]: boolean;
+  }>({
     accordion1: false,
     accordion2: false,
     subAccordion1: false,
@@ -30,7 +35,13 @@ const TestCaseInfo: React.FC = () => {
         </p>
       </div>
 
-      <Accordion openAccordions={openAccordions} toggleAccordion={toggleAccordion} mock={mock} />
+      <Accordion
+        openAccordions={openAccordions}
+        toggleAccordion={toggleAccordion}
+        mock={mock}
+        text={text}
+        bg={bg}
+      />
     </div>
   );
 };

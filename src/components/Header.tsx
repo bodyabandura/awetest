@@ -1,6 +1,6 @@
-import React from 'react';
-import { Logo } from '../assets/icons/Logo';
-import { AccountIcon } from '../assets/icons/AccountIcon';
+import React from "react";
+import { Logo } from "../assets/icons/Logo";
+import { AccountIcon } from "../assets/icons/AccountIcon";
 
 const Header: React.FC = () => {
   return (
@@ -26,7 +26,9 @@ const Header: React.FC = () => {
       <div className="flex items-center">
         <p className="mr-4">Hi, Roman</p>
         <button className="bg-blue-500 text-white rounded-full p-2">
-          <span><AccountIcon /></span>
+          <span>
+            <AccountIcon />
+          </span>
         </button>
       </div>
     </header>
