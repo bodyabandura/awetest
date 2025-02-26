@@ -11,24 +11,14 @@ import { PassedIcon } from "../assets/icons/PassedIcon";
 import { useEffect, useState } from "react";
 import { getButtonClass } from "../utils/buttonClass";
 import { Input } from "./Input";
-import { Record } from "../types/Record";
-import { LogTable } from "./LogTable";
 import { SourceIcon } from "../assets/icons/SourceIcon";
 import { TargetIcon } from "../assets/icons/TargetIcon";
-
+import { parseDataMismatch } from "../utils/parseData";
+import { LogTable } from "./LogTable";
+import { RightArrowIcon } from "../assets/icons/RightArrowIcon";
 interface LogsListProps {
   log: any;
 }
-
-const mockData: Record[] = Array.from({ length: 50 }, (_, idx) => ({
-  db: `Target Record${idx + 1}`,
-  id: `${idx + 1}`,
-  user_id: `USER_${idx + 1}`,
-  name: `Name_${idx + 1}`,
-  access: `Access_${idx + 1}`,
-  website: `http://website${idx + 1}.com`,
-  result: idx % 2 === 0 ? "passed" : "failed",
-}));
 
 export const LogsList = ({ log }: LogsListProps) => {
   const [filterTable, setFilterTable] = useState("all");
@@ -36,6 +26,11 @@ export const LogsList = ({ log }: LogsListProps) => {
   const [isDataCheck, setIsDataCheck] = useState(true);
   const [isDetails, setIsDetails] = useState(false);
   const [value, setValue] = useState("");
+  const [expanded, setExpanded] = useState(false);
+
+  const parsedData = log.data_mismatch
+    ? parseDataMismatch(log.data_mismatch)
+    : [];
 
   const handleChangeButton = (buttonType: "dataCheck" | "details") => {
     if (buttonType === "dataCheck") {
@@ -46,14 +41,25 @@ export const LogsList = ({ log }: LogsListProps) => {
       setIsDetails(true);
     }
   };
-  const filteredData = mockData.filter((record) => {
-    const matchesResult =
-      filterTable === "all" || record.result === filterTable;
-    const matchesSearch = record.name
-      .toLowerCase()
-      .includes(searchValue.toLowerCase());
 
-    return matchesResult && matchesSearch;
+  const handleAccordionToggle = () => {
+    setExpanded(!expanded);
+  };
+
+  const filteredData = parsedData.filter((record: any) => {
+    const name = record.name || "";
+    const id = record.id || "";
+    const userId = record.user_id || "";
+    const website = record.website || "";
+    const db = record.db || "";
+
+    return (
+      name.toLowerCase().includes(searchValue.toLowerCase()) ||
+      id.toLowerCase().includes(searchValue.toLowerCase()) ||
+      userId.toLowerCase().includes(searchValue.toLowerCase()) ||
+      website.toLowerCase().includes(searchValue.toLowerCase()) ||
+      db.toLowerCase().includes(searchValue.toLowerCase())
+    );
   });
 
   const handleSearchChange = debounce((searchTerm: string) => {
@@ -63,12 +69,26 @@ export const LogsList = ({ log }: LogsListProps) => {
   useEffect(() => {
     handleSearchChange(value);
   }, [value]);
-
   return (
-    <Accordion className="py-2">
+    <Accordion
+      className="py-2"
+      sx={{ boxShadow: "none" }}
+      expanded={expanded}
+      onChange={handleAccordionToggle}
+    >
       <AccordionSummary
         className="w-full gap-2"
-        expandIcon={<ArrowIcon />}
+        expandIcon={
+          expanded ? (
+            <ArrowIcon
+
+            />
+          ) : (
+            <RightArrowIcon
+
+            />
+          )
+        }
         aria-controls={`panel-content`}
         id={`panel-header`}
         sx={{
@@ -76,6 +96,7 @@ export const LogsList = ({ log }: LogsListProps) => {
           flexDirection: "row-reverse",
           justifyContent: "space-between",
           alignItems: "center",
+          padding: "0",
         }}
       >
         <div className="flex items-center">
@@ -243,8 +264,8 @@ export const LogsList = ({ log }: LogsListProps) => {
                 {filteredData.length > 0 ? (
                   <LogTable filteredData={filteredData} />
                 ) : (
-                  <div className="text-center py-4 text-gray-500">
-                    No data found.
+                  <div className="flex justify-center items-center h-full">
+                    <p className="text-gray-500">No data found</p>
                   </div>
                 )}
               </div>

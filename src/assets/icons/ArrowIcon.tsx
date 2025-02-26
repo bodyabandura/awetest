@@ -1,10 +1,13 @@
 type Props = {
   isOpen?: boolean;
+  sx?: string;
 }
-export const ArrowIcon: React.FC<Props> = ( { isOpen }) => {
+export const ArrowIcon: React.FC<Props> = ( { isOpen, sx }) => {
   return (
     <svg
-      className={`w-5 h-5 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+     width="16"
+      height="16"
+      className={`w-5 h-5 transition-transform ${sx} ${isOpen ? 'rotate-90' : ''}`}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
