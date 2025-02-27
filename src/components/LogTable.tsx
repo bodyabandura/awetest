@@ -11,9 +11,11 @@ import {
 } from "@mui/material";
 import { SourceIcon } from "../assets/icons/SourceIcon";
 import { TargetIcon } from "../assets/icons/TargetIcon";
+import { Organization } from "../types/filteredType";
+
 
 type Props = {
-  filteredData: any[];
+  filteredData:  Organization[];
 };
 
 export const LogTable: React.FC<Props> = ({ filteredData }) => {

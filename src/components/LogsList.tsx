@@ -16,11 +16,15 @@ import { TargetIcon } from "../assets/icons/TargetIcon";
 import { parseDataMismatch } from "../utils/parseData";
 import { LogTable } from "./LogTable";
 import { RightArrowIcon } from "../assets/icons/RightArrowIcon";
+import { DataCheckResult } from "../types/dataCheckResult";
+import { Organization } from "../types/filteredType";
+
 interface LogsListProps {
-  log: any;
+  log: DataCheckResult;
 }
 
-export const LogsList = ({ log }: LogsListProps) => {
+export const LogsList = ({ log }: LogsListProps) => { 
+  const { data_mismatch } = log;
   const [filterTable, setFilterTable] = useState("all");
   const [searchValue, setSearchValue] = useState("");
   const [isDataCheck, setIsDataCheck] = useState(true);
@@ -28,8 +32,8 @@ export const LogsList = ({ log }: LogsListProps) => {
   const [value, setValue] = useState("");
   const [expanded, setExpanded] = useState(false);
 
-  const parsedData = log.data_mismatch
-    ? parseDataMismatch(log.data_mismatch)
+  const parsedData = data_mismatch
+    ? parseDataMismatch(data_mismatch)
     : [];
 
   const handleChangeButton = (buttonType: "dataCheck" | "details") => {
@@ -46,19 +50,19 @@ export const LogsList = ({ log }: LogsListProps) => {
     setExpanded(!expanded);
   };
 
-  const filteredData = parsedData.filter((record: any) => {
+  const filteredData = parsedData.filter((record: Organization) => {
     const name = record.name || "";
     const id = record.id || "";
     const userId = record.user_id || "";
     const website = record.website || "";
-    const db = record.db || "";
+    // const db = record.db || "";
 
     return (
       name.toLowerCase().includes(searchValue.toLowerCase()) ||
       id.toLowerCase().includes(searchValue.toLowerCase()) ||
-      userId.toLowerCase().includes(searchValue.toLowerCase()) ||
-      website.toLowerCase().includes(searchValue.toLowerCase()) ||
-      db.toLowerCase().includes(searchValue.toLowerCase())
+      userId.toLowerCase().includes(searchValue.toLowerCase()) && name.toLowerCase().includes(searchValue.toLowerCase()) ||
+      website.toLowerCase().includes(searchValue.toLowerCase())  
+      // db.toLowerCase().includes(searchValue.toLowerCase())
     );
   });
 
