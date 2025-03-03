@@ -9,13 +9,17 @@ export const LogAnalysisPanel = () => {
   const handleFilterChange = (newFilter: string) => {
     setFilter(newFilter);
   };
-
+  
   const filteredLogs = mock.logs.filter((el) => {
     switch (filter) {
       case "passed":
         return el.result_counter.pass;
       case "fail":
         return el.result_counter.fail;
+      case "failedCount":
+        return el.source_data_count - el.target_data_count;
+      case "failedData":
+        return el.source_data_count - el.target_data_count;
       default:
         return true;
     }

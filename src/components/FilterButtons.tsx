@@ -2,6 +2,7 @@ import { PassedIcon } from "../assets/icons/PassedIcon";
 import { FailedIcon } from "../assets/icons/FailedIcon";
 import mock from "../../mock.json";
 import { getButtonClass } from "../utils/buttonClass";
+import { useState } from "react";
 
 interface FilterButtonsProps {
   filter: string;
@@ -12,6 +13,8 @@ export const FilterButtons = ({
   filter,
   onFilterChange,
 }: FilterButtonsProps) => {
+  const [showAdditionalButtons, setShowAdditionalButtons] = useState(false);
+
   return (
     <div className="flex justify-between items-center pb-4">
       <div className="flex items-center gap-[13px]">
@@ -20,7 +23,9 @@ export const FilterButtons = ({
             filter,
             "all"
           )}`}
-          onClick={() => onFilterChange("all")}
+          onClick={() => {
+            onFilterChange("all"), setShowAdditionalButtons(false)
+          }}
         >
           All Checks
           <span
@@ -34,14 +39,15 @@ export const FilterButtons = ({
             filter,
             "passed"
           )}`}
-          onClick={() => onFilterChange("passed")}
+          onClick={() => {
+            onFilterChange("passed"), setShowAdditionalButtons(false);
+          }}
         >
           <PassedIcon />
           Passed
           <span
-            className={`${
-              filter === "passed" ? "text-white" : "text-[#8B8B8B]"
-            }`}
+            className={`${filter === "passed" ? "text-white" : "text-[#8B8B8B]"
+              }`}
           >
             {mock.logs.filter((el) => el.result_counter.pass).length}
           </span>
@@ -51,7 +57,9 @@ export const FilterButtons = ({
             filter,
             "fail"
           )}`}
-          onClick={() => onFilterChange("fail")}
+          onClick={() => {
+            onFilterChange("fail"), setShowAdditionalButtons(true)
+          }}
         >
           <FailedIcon />
           All Failed
@@ -61,32 +69,39 @@ export const FilterButtons = ({
             {mock.logs.filter((el) => el.result_counter.fail).length}
           </span>
         </button>
-        <button
-          className={`flex items-center border border-black border-opacity-10 rounded-[10px] py-2 px-4 gap-1 font-medium h-[32px] ${getButtonClass(
-            filter,
-            ""
-          )}`}
-        >
-          Failed Count
-          <span
-            className={`${filter === "" ? "text-white" : "text-[#8B8B8B]"}`}
+         {showAdditionalButtons && (
+          <>
+           <button
+          onClick={() => onFilterChange("failedCount")}
+            className={`flex items-center border border-black border-opacity-10 rounded-[10px] py-2 px-4 gap-1 font-medium h-[32px] ${getButtonClass(
+              filter,
+              "failedCount"
+            )}`}
           >
-            {mock.logs.filter((el) => el.result_counter.fail).length}
-          </span>
-        </button>
-        <button
-          className={`flex items-center border border-black border-opacity-10 rounded-[10px] py-2 px-4 gap-1 font-medium h-[32px] ${getButtonClass(
-            filter,
-            ""
-          )}`}
-        >
-          Failed Data
-          <span
-            className={`${filter === "" ? "text-white" : "text-[#8B8B8B]"}`}
+            Failed Count
+            <span
+              className={`${filter === "datacount" ? "text-white" : "text-[#8B8B8B]"}`}
+            >
+              {mock.logs.filter((el) => el.result_counter.fail).length}
+            </span>
+          </button>
+          <button
+              onClick={() => onFilterChange("failedData")}
+
+            className={`flex items-center border border-black border-opacity-10 rounded-[10px] py-2 px-4 gap-1 font-medium h-[32px] ${getButtonClass(
+              filter,
+              "failedData"
+            )}`}
           >
-            {mock.logs.filter((el) => el.result_counter.fail).length}
-          </span>
-        </button>
+            Failed Data
+            <span
+              className={`${filter === "failedData" ? "text-white" : "text-[#8B8B8B]"}`}
+            >
+              {mock.logs.filter((el) => el.result_counter.fail).length}
+            </span>
+          </button>
+          </>
+         )}
       </div>
     </div>
   );

@@ -17,13 +17,12 @@ import { parseDataMismatch } from "../utils/parseData";
 import { LogTable } from "./LogTable";
 import { RightArrowIcon } from "../assets/icons/RightArrowIcon";
 import { DataCheckResult } from "../types/dataCheckResult";
-import { Organization } from "../types/filteredType";
 
 interface LogsListProps {
   log: DataCheckResult;
-}
+};
 
-export const LogsList = ({ log }: LogsListProps) => { 
+export const LogsList = ({ log }: LogsListProps) => {
   const { data_mismatch } = log;
   const [filterTable, setFilterTable] = useState("all");
   const [searchValue, setSearchValue] = useState("");
@@ -31,6 +30,8 @@ export const LogsList = ({ log }: LogsListProps) => {
   const [isDetails, setIsDetails] = useState(false);
   const [value, setValue] = useState("");
   const [expanded, setExpanded] = useState(false);
+  const [openInfoFails, setOpenInfoFails] = useState(false);
+  const [selectedColumn, setSelectedColumn] = useState<"id" | "user_id" | "access" | null>(null);
 
   const parsedData = data_mismatch
     ? parseDataMismatch(data_mismatch)
@@ -46,23 +47,26 @@ export const LogsList = ({ log }: LogsListProps) => {
     }
   };
 
+
   const handleAccordionToggle = () => {
     setExpanded(!expanded);
   };
 
-  const filteredData = parsedData.filter((record: Organization) => {
-    const name = record.name || "";
-    const id = record.id || "";
-    const userId = record.user_id || "";
-    const website = record.website || "";
-    // const db = record.db || "";
+
+
+  const filteredData = parsedData.filter((record: any) => {
+    const name = (record.sourceRecord[0]?.name || "") || (record.targetRecord[0]?.name || "");
+    const id = (record.sourceRecord[0]?.id || "") || (record.targetRecord[0]?.id || "");
+    const userId = (record.sourceRecord[0]?.user_id || "") || (record.targetRecord[0]?.user_id || "");
+    const website = (record.sourceRecord[0]?.website || "") || (record.targetRecord[0]?.website || "");
+    const access = (record.sourceRecord[0]?.access || "") || (record.targetRecord[0]?.access || "");
 
     return (
-      name.toLowerCase().includes(searchValue.toLowerCase()) ||
-      id.toLowerCase().includes(searchValue.toLowerCase()) ||
-      userId.toLowerCase().includes(searchValue.toLowerCase()) && name.toLowerCase().includes(searchValue.toLowerCase()) ||
-      website.toLowerCase().includes(searchValue.toLowerCase())  
-      // db.toLowerCase().includes(searchValue.toLowerCase())
+      (name.toLowerCase().includes(searchValue.toLowerCase()) ||
+        id.toLowerCase().includes(searchValue.toLowerCase()) ||
+        userId.toLowerCase().includes(searchValue.toLowerCase()) ||
+        website.toLowerCase().includes(searchValue.toLowerCase()) ||
+        access.toLowerCase().includes(searchValue.toLowerCase()))
     );
   });
 
@@ -73,6 +77,10 @@ export const LogsList = ({ log }: LogsListProps) => {
   useEffect(() => {
     handleSearchChange(value);
   }, [value]);
+
+  const handleColumnClick = (column: "id" | "user_id" | "access") => {
+    setSelectedColumn((prevColumn) => (prevColumn === column ? null : column));
+  };
   return (
     <Accordion
       className="py-2"
@@ -84,13 +92,9 @@ export const LogsList = ({ log }: LogsListProps) => {
         className="w-full gap-2"
         expandIcon={
           expanded ? (
-            <ArrowIcon
-
-            />
+            <ArrowIcon />
           ) : (
-            <RightArrowIcon
-
-            />
+            <RightArrowIcon />
           )
         }
         aria-controls={`panel-content`}
@@ -105,11 +109,10 @@ export const LogsList = ({ log }: LogsListProps) => {
       >
         <div className="flex items-center">
           <span
-            className={`inline-block px-2 py-1 rounded-[25px]  ${
-              log.result_counter.pass === 0
-                ? "bg-[#FFE9E7] border-[1px] border-[#EDA69E] text-[#7D3838]"
-                : "bg-[#F4FCF8] border text-[#347353] border-[#9ACCB3]"
-            }`}
+            className={`inline-block px-2 py-1 rounded-[25px]  ${log.result_counter.pass === 0
+              ? "bg-[#FFE9E7] border-[1px] border-[#EDA69E] text-[#7D3838]"
+              : "bg-[#F4FCF8] border text-[#347353] border-[#9ACCB3]"
+              }`}
           >
             {log.result_counter.pass === 0 ? "Failed" : "Passed"}
           </span>
@@ -141,19 +144,17 @@ export const LogsList = ({ log }: LogsListProps) => {
           <div className="flex flex-col">
             <div className="flex items-center pl-[35px] gap-[24px] border-b border-b-[#D9D9D9] pb-[31px]">
               <button
-                className={`text-[#929292] text-[13px] ${
-                  isDataCheck
-                    ? "text-[#05AEEE] border-b border-b-[#05AEEE]"
-                    : ""
-                }`}
+                className={`text-[#929292] text-[13px] ${isDataCheck
+                  ? "text-[#05AEEE] border-b border-b-[#05AEEE]"
+                  : ""
+                  }`}
                 onClick={() => handleChangeButton("dataCheck")}
               >
                 Data Check
               </button>
               <button
-                className={`text-[#929292] text-[13px] ${
-                  isDetails ? "text-[#05AEEE] border-b border-b-[#05AEEE]" : ""
-                }`}
+                className={`text-[#929292] text-[13px] ${isDetails ? "text-[#05AEEE] border-b border-b-[#05AEEE]" : ""
+                  }`}
                 onClick={() => handleChangeButton("details")}
               >
                 Details
@@ -239,7 +240,24 @@ export const LogsList = ({ log }: LogsListProps) => {
               </table>
             )}
 
-            {log.result_counter.fail > 0 && isDataCheck && (
+            <div className="flex gap-4 pb-4">
+              <button
+                onClick={() => setOpenInfoFails(true)}
+                className="px-4 py-2 font-medium text-sm text-[#333333] border border-[#ccc] rounded-md hover:bg-[#e5f3ff] active:bg-[#cce4ff] transition-all duration-200"
+              >
+                All
+              </button>
+              <button
+                onClick={() => {
+                  setOpenInfoFails(false), setSelectedColumn(null)
+                }}
+                className="px-4 py-2 font-medium text-sm text-[#333333] border border-[#ccc] rounded-md hover:bg-[#ffe9e7] active:bg-[#f7d0c2] transition-all duration-200"
+              >
+                None
+              </button>
+            </div>
+
+            {log.result_counter.fail > 0 && isDataCheck && openInfoFails && (
               <div className="flex items-center gap-[20px] pb-[19px]">
                 <div className="flex items-center">
                   <p className="text-[#333333] font-medium font text-sm">
@@ -247,26 +265,42 @@ export const LogsList = ({ log }: LogsListProps) => {
                   </p>
                 </div>
                 <div className="flex items-center gap-[10px]">
-                  <p className="bg-[#FFE9E7] font-medium gap-1 border border-[#EDA69E] rounded-[10px] px-2 py-1 h-[23px] items-center flex text-[#7D3838]">
+                  <button
+                    className="bg-[#FFE9E7] font-medium gap-1 border border-[#EDA69E] rounded-[10px] px-2 py-1 h-[23px] items-center flex text-[#7D3838]"
+                    onClick={() => handleColumnClick("id")}
+                  >
                     ID{" "}
-                    <span className="text-[#7D383899] text-opacity-60">18</span>
-                  </p>
-                  <p className="bg-[#FFE9E7] font-medium gap-1 border border-[#EDA69E] rounded-[10px] px-2 py-1 h-[23px] items-center flex text-[#7D3838]">
-                    user_id{" "}
-                    <span className="text-[#7D383899] text-opacity-60">25</span>
-                  </p>
-                  <p className="bg-[#FFE9E7] font-medium gap-1 border border-[#EDA69E] rounded-[10px] px-2 py-1 h-[23px] items-center flex text-[#7D3838]">
+                    <span className="text-[#7D383899] text-opacity-60">{filteredData.filter((el) => el.sourceRecord[0].id - el.targetRecord[0].id).length}</span>
+                  </button>
+                  {filteredData.filter((el) => el.sourceRecord[0].user_id - el.targetRecord[0].user_id).length > 0 && (
+                    <button
+                      className="bg-[#FFE9E7] font-medium gap-1 border border-[#EDA69E] rounded-[10px] px-2 py-1 h-[23px] items-center flex text-[#7D3838]"
+                      onClick={() => handleColumnClick("user_id")}
+                    >
+                      user_id{" "}
+                      <span className="text-[#7D383899] text-opacity-60">
+                        {filteredData.filter((el) => el.sourceRecord[0].user_id - el.targetRecord[0].user_id).length}
+                      </span>
+                    </button>
+                  )}
+                  {/* <button
+                    className="bg-[#FFE9E7] font-medium gap-1 border border-[#EDA69E] rounded-[10px] px-2 py-1 h-[23px] items-center flex text-[#7D3838]"
+                    onClick={() => handleColumnClick("access")}
+                  >
                     access{" "}
                     <span className="text-[#7D383899] text-opacity-60">5</span>
-                  </p>
+                  </button> */}
                 </div>
               </div>
             )}
 
             {isDataCheck && (
               <div className="overflow-x-auto">
-                {filteredData.length > 0 ? (
-                  <LogTable filteredData={filteredData} />
+                {filteredData.length > 0 && log.result_counter.fail ? (
+                  <LogTable
+                    filteredData={filteredData}
+                    selectedColumn={selectedColumn}
+                  />
                 ) : (
                   <div className="flex justify-center items-center h-full">
                     <p className="text-gray-500">No data found</p>
@@ -280,3 +314,4 @@ export const LogsList = ({ log }: LogsListProps) => {
     </Accordion>
   );
 };
+

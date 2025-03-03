@@ -11,14 +11,13 @@ import {
 } from "@mui/material";
 import { SourceIcon } from "../assets/icons/SourceIcon";
 import { TargetIcon } from "../assets/icons/TargetIcon";
-import { Organization } from "../types/filteredType";
-
 
 type Props = {
-  filteredData:  Organization[];
+  filteredData: any[];
+  selectedColumn: "id" | "user_id" | "access" | null;
 };
 
-export const LogTable: React.FC<Props> = ({ filteredData }) => {
+export const LogTable: React.FC<Props> = ({ filteredData, selectedColumn }) => {
   const [page, setPage] = useState(0);
   const rowsPerPage = 30;
 
@@ -42,6 +41,13 @@ export const LogTable: React.FC<Props> = ({ filteredData }) => {
     page * rowsPerPage + rowsPerPage
   );
 
+  const isColumnHighlighted = (column: string, sourceValue: string, targetValue: string) => {
+    if (column === "id" || column === "user_id" || column === "access") {
+      return sourceValue !== targetValue;
+    }
+    return false;
+  };
+
   return (
     <TableContainer
       component={Paper}
@@ -61,21 +67,83 @@ export const LogTable: React.FC<Props> = ({ filteredData }) => {
         </TableHead>
         <TableBody>
           <TableCell></TableCell>
+
           {paginatedData.map((data, index) => (
-            <TableRow key={data.id}>
-              <TableCell sx={tableCellStyles}>
-                {index + 1 + page * rowsPerPage}
-              </TableCell>
-              <TableCell sx={{...tableCellStyles, display: "flex", gap: "10px"}}>
-              {index % 2 === 0 ? <SourceIcon /> : <TargetIcon />}{" "}
-              {index % 2 === 0 ? "Source Record" : "Target Record"}
-              </TableCell>
-              <TableCell sx={tableCellStyles}>{data.id}</TableCell>
-              <TableCell sx={tableCellStyles}>{data.user_id}</TableCell>
-              <TableCell sx={tableCellStyles}>{data.name}</TableCell>
-              <TableCell sx={tableCellStyles}>{data.access}</TableCell>
-              <TableCell sx={tableCellStyles}>{data.website}</TableCell>
-            </TableRow>
+            <React.Fragment key={data.id}>
+              {data.sourceRecord && data.sourceRecord.length > 0 && (
+                <TableRow>
+                  <TableCell sx={tableCellStyles}>
+                    {index + 1 + page * rowsPerPage}
+                  </TableCell>
+                  <TableCell sx={{ ...tableCellStyles, display: "flex", gap: "10px" }}>
+                    <SourceIcon /> Source Record
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      ...tableCellStyles,
+                      backgroundColor: selectedColumn === "id" ? "#FFEBEB" : "transparent",
+                    }}
+                  >
+                    {data.sourceRecord[0].id}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      ...tableCellStyles,
+                      backgroundColor: selectedColumn === "user_id" ? "#FFEBEB" : "transparent",
+                    }}
+                  >
+                    {data.sourceRecord[0].user_id}
+                  </TableCell>
+                  <TableCell sx={tableCellStyles}>{data.sourceRecord[0].name}</TableCell>
+                  <TableCell
+                    sx={{
+                      ...tableCellStyles,
+                      backgroundColor: selectedColumn === "access" ? "#FFEBEB" : "transparent",
+                    }}
+                  >
+                    {data.sourceRecord[0].access}
+                  </TableCell>
+                  <TableCell sx={tableCellStyles}>{data.sourceRecord[0].website}</TableCell>
+                </TableRow>
+              )}
+
+              {data.targetRecord && data.targetRecord.length > 0 && (
+                <TableRow>
+                  <TableCell sx={tableCellStyles}>
+                    {index + 1 + page * rowsPerPage}
+                  </TableCell>
+                  <TableCell sx={{ ...tableCellStyles, display: "flex", gap: "10px" }}>
+                    <TargetIcon /> Target Record
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      ...tableCellStyles,
+                      backgroundColor: selectedColumn && isColumnHighlighted(selectedColumn, data.targetRecord[0].id, data.sourceRecord[0]?.id || "") ? "#FFEBEB" : "transparent",
+                    }}
+                  >
+                    {data.targetRecord[0].id}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      ...tableCellStyles,
+                      backgroundColor: selectedColumn && isColumnHighlighted(selectedColumn, data.targetRecord[0].user_id, data.sourceRecord[0]?.user_id || "") ? "#FFEBEB" : "transparent",
+                    }}
+                  >
+                    {data.targetRecord[0].user_id}
+                  </TableCell>
+                  <TableCell sx={tableCellStyles}>{data.targetRecord[0].name}</TableCell>
+                  <TableCell
+                    sx={{
+                      ...tableCellStyles,
+                      backgroundColor: selectedColumn && isColumnHighlighted(selectedColumn, data.targetRecord[0].access, data.sourceRecord[0]?.access || "") ? "#FFEBEB" : "transparent",
+                    }}
+                  >
+                    {data.targetRecord[0].access}
+                  </TableCell>
+                  <TableCell sx={tableCellStyles}>{data.targetRecord[0].website}</TableCell>
+                </TableRow>
+              )}
+            </React.Fragment>
           ))}
         </TableBody>
       </Table>
