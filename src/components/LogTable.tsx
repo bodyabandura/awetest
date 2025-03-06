@@ -14,7 +14,7 @@ import { TargetIcon } from "../assets/icons/TargetIcon";
 
 type Props = {
   filteredData: any[];
-  selectedColumn: "id" | "user_id" | "access" | null;
+  selectedColumn: "id" | "user_id" | "name" | "website" |  null;
 };
 
 export const LogTable: React.FC<Props> = ({ filteredData, selectedColumn }) => {
@@ -27,6 +27,7 @@ export const LogTable: React.FC<Props> = ({ filteredData, selectedColumn }) => {
     fontSize: "13px",
     fontWeight: "500",
     fontFamily: "Geist, san-serif",
+    padding: "11px 16px",
   };
 
   const handleChangePage = (
@@ -42,16 +43,13 @@ export const LogTable: React.FC<Props> = ({ filteredData, selectedColumn }) => {
   );
 
   const isColumnHighlighted = (column: string, sourceValue: string, targetValue: string) => {
-    if (column === "id" || column === "user_id" || column === "access") {
-      return sourceValue !== targetValue;
-    }
-    return false;
-  };
+    return selectedColumn === column && sourceValue !== targetValue;
+  }
 
   return (
     <TableContainer
       component={Paper}
-      sx={{ borderTopLeftRadius: "20px", borderTopRightRadius: "20px" }}
+      sx={{ borderTopLeftRadius: "5px", borderTopRightRadius: "5px" }}
     >
       <Table>
         <TableHead>
@@ -66,8 +64,6 @@ export const LogTable: React.FC<Props> = ({ filteredData, selectedColumn }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          <TableCell></TableCell>
-
           {paginatedData.map((data, index) => (
             <React.Fragment key={data.id}>
               {data.sourceRecord && data.sourceRecord.length > 0 && (
@@ -94,11 +90,17 @@ export const LogTable: React.FC<Props> = ({ filteredData, selectedColumn }) => {
                   >
                     {data.sourceRecord[0].user_id}
                   </TableCell>
-                  <TableCell sx={tableCellStyles}>{data.sourceRecord[0].name}</TableCell>
                   <TableCell
                     sx={{
                       ...tableCellStyles,
-                      backgroundColor: selectedColumn === "access" ? "#FFEBEB" : "transparent",
+                      backgroundColor: selectedColumn === "name" ? "#FFEBEB" : "transparent",
+                    }}
+                  >
+                    {data.sourceRecord[0].name}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      ...tableCellStyles,
                     }}
                   >
                     {data.sourceRecord[0].access}
@@ -118,7 +120,7 @@ export const LogTable: React.FC<Props> = ({ filteredData, selectedColumn }) => {
                   <TableCell
                     sx={{
                       ...tableCellStyles,
-                      backgroundColor: selectedColumn && isColumnHighlighted(selectedColumn, data.targetRecord[0].id, data.sourceRecord[0]?.id || "") ? "#FFEBEB" : "transparent",
+                      backgroundColor: selectedColumn && isColumnHighlighted(selectedColumn, data.targetRecord[0].id, data.sourceRecord[0]?.id) ? "#FFEBEB" : "transparent",
                     }}
                   >
                     {data.targetRecord[0].id}
@@ -126,7 +128,7 @@ export const LogTable: React.FC<Props> = ({ filteredData, selectedColumn }) => {
                   <TableCell
                     sx={{
                       ...tableCellStyles,
-                      backgroundColor: selectedColumn && isColumnHighlighted(selectedColumn, data.targetRecord[0].user_id, data.sourceRecord[0]?.user_id || "") ? "#FFEBEB" : "transparent",
+                      backgroundColor: selectedColumn && isColumnHighlighted(selectedColumn, data.targetRecord[0].user_id, data.sourceRecord[0]?.user_id) ? "#FFEBEB" : "transparent",
                     }}
                   >
                     {data.targetRecord[0].user_id}
@@ -135,12 +137,15 @@ export const LogTable: React.FC<Props> = ({ filteredData, selectedColumn }) => {
                   <TableCell
                     sx={{
                       ...tableCellStyles,
-                      backgroundColor: selectedColumn && isColumnHighlighted(selectedColumn, data.targetRecord[0].access, data.sourceRecord[0]?.access || "") ? "#FFEBEB" : "transparent",
+                      backgroundColor: selectedColumn && isColumnHighlighted(selectedColumn, data.targetRecord[0].name, data.sourceRecord[0]?.name) ? "#FFEBEB" : "transparent",
                     }}
                   >
                     {data.targetRecord[0].access}
                   </TableCell>
-                  <TableCell sx={tableCellStyles}>{data.targetRecord[0].website}</TableCell>
+                  <TableCell   sx={{
+                      ...tableCellStyles,
+                      backgroundColor: selectedColumn && isColumnHighlighted(selectedColumn, data.targetRecord[0].website, data.sourceRecord[0]?.website || "") ? "#FFEBEB" : "transparent",
+                    }}>{data.targetRecord[0].website}</TableCell>
                 </TableRow>
               )}
             </React.Fragment>

@@ -2,18 +2,21 @@ import { PassedIcon } from "../assets/icons/PassedIcon";
 import { FailedIcon } from "../assets/icons/FailedIcon";
 import mock from "../../mock.json";
 import { getButtonClass } from "../utils/buttonClass";
-import { useState } from "react";
+import { ArrowsIcon } from "../assets/icons/ArrowsIcon";
 
 interface FilterButtonsProps {
   filter: string;
   onFilterChange: (newFilter: string) => void;
+  onExpandAll: () => void;
 }
 
 export const FilterButtons = ({
   filter,
   onFilterChange,
+  onExpandAll
+
 }: FilterButtonsProps) => {
-  const [showAdditionalButtons, setShowAdditionalButtons] = useState(false);
+
 
   return (
     <div className="flex justify-between items-center pb-4">
@@ -23,9 +26,9 @@ export const FilterButtons = ({
             filter,
             "all"
           )}`}
-          onClick={() => {
-            onFilterChange("all"), setShowAdditionalButtons(false)
-          }}
+          onClick={() => 
+            onFilterChange("all")
+          }
         >
           All Checks
           <span
@@ -39,9 +42,7 @@ export const FilterButtons = ({
             filter,
             "passed"
           )}`}
-          onClick={() => {
-            onFilterChange("passed"), setShowAdditionalButtons(false);
-          }}
+          onClick={() => onFilterChange("passed")}
         >
           <PassedIcon />
           Passed
@@ -57,9 +58,9 @@ export const FilterButtons = ({
             filter,
             "fail"
           )}`}
-          onClick={() => {
-            onFilterChange("fail"), setShowAdditionalButtons(true)
-          }}
+          onClick={() => 
+            onFilterChange("fail")
+          }
         >
           <FailedIcon />
           All Failed
@@ -69,8 +70,6 @@ export const FilterButtons = ({
             {mock.logs.filter((el) => el.result_counter.fail).length}
           </span>
         </button>
-         {showAdditionalButtons && (
-          <>
            <button
           onClick={() => onFilterChange("failedCount")}
             className={`flex items-center border border-black border-opacity-10 rounded-[10px] py-2 px-4 gap-1 font-medium h-[32px] ${getButtonClass(
@@ -100,8 +99,9 @@ export const FilterButtons = ({
               {mock.logs.filter((el) => el.result_counter.fail).length}
             </span>
           </button>
-          </>
-         )}
+      </div>
+      <div className="flex items-center border border-[#000000] border-opacity-10 rounded-[10px] py-2 px-4">
+        <button  onClick={onExpandAll} className="flex items-center gap-2 font-medium text-[14px] text-[#333333]">Expand All <ArrowsIcon /></button>
       </div>
     </div>
   );
